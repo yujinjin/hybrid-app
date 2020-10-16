@@ -1,6 +1,25 @@
 ## 简介
 H5与app底层交互，以及协议常用协议。
 
+## 目录
+- [简介](#简介)
+- [目录](#目录)
+- [底层协议的说明](#底层协议的说明)
+- [使用](#使用)
+- [常用的协议说明](#常用的协议说明)
+    - [1.forward 跳转](#1forward-跳转)
+    - [2.back 返回](#2back-返回)
+    - [3.notice 通知](#3notice-通知)
+    - [4.share 分享](#4share-分享)
+    - [5.setNativeData 更新native数据](#5setnativedata-更新native数据)
+    - [6.getNativeData 获取native数据](#6getnativedata-获取native数据)
+    - [7.updateNavbarStatus 修改导航状态](#7updatenavbarstatus-修改导航状态)
+    - [8.downloadImage 图片下载（保存）](#8downloadimage-图片下载保存)
+    - [9.customer 自定义扩展协议](#9customer-自定义扩展协议)
+    - [10.clearWebviewFun 清除webview下的所有回调函数（非协议）](#10clearwebviewfun-清除webview下的所有回调函数非协议)
+- [待考虑项](#待考虑项)
+- [最后](#最后)
+
 ## 底层协议的说明
 说明：其URL地址是格式为:
 ```js
@@ -19,7 +38,7 @@ schema://(tagname)?callback=xxx&param=encodeURIComponent({})
 
 ## 使用
 ```javascript
-import commonHybrid from "common-hybrid";
+import hybrid from "hybrid/index";
 
 // APP主动通知h5的回调函数
 let commonFunction = function(dataInfo){
@@ -42,12 +61,13 @@ let config = {
     callbackFunName: "callback"
 }
 
-let hybrid = commonHybrid(commonFunction, config);
+let myHybrid = hybrid(commonFunction, config);
 ```
 
 ## 常用的协议说明
-##### 1.forward 跳转
-说明：协议的名称是：forward，表示当前H5的页面需要APP做跳转动作。
+### 1.forward 跳转
+
+> 说明：协议的名称是：forward，表示当前H5的页面需要APP做跳转动作。
 
 参数格式如下：
 ```js
@@ -67,8 +87,6 @@ callbackFun: function(){
 }
 ```
 
-
-
 **注意：**
 *在H5跳转到APP的native原生页时，如果APP新打开webview内的H5页面认为该页面是原生native页，H5就会终止页面的渲染，通过forward协议跳转原生页面，带来的问题就是H5新打开的原生页返回时会看到之前H5终止渲染的那个页面（页面一片空白）。*
 
@@ -76,8 +94,9 @@ callbackFun: function(){
 
 *这是一个临时解决方案，最好的解决方案就是app监控H5的URL跳转，如果当前URL跳转的页面是原生自己的页面就会直接拦截掉，显示出原生的页面。*
 
-##### 2.back 返回
-说明：协议的名称是：back，表示H5页面的返回，这里有可能返回到H5页面，也可能会返回到上一个原生页面。
+### 2.back 返回
+
+> 说明：协议的名称是：back，表示H5页面的返回，这里有可能返回到H5页面，也可能会返回到上一个原生页面。
 
 参数格式如下：
 ```js
@@ -92,8 +111,9 @@ callbackFun: function(){
 }
 ```
 
-##### 3.notice 通知
-说明：H5 通知APP的事件。比如：H5登录、登出、数据有变动
+### 3.notice 通知
+
+> 说明：H5 通知APP的事件。比如：H5登录、登出、数据有变动
 
 参数格式如下：
 ```js
@@ -109,8 +129,10 @@ callbackFun: function(){
 }
 ```
 
-##### 4.share 分享
-说明：APP内的H5页面做分享
+### 4.share 分享
+
+> 说明：APP内的H5页面做分享
+
 参数格式如下：
 ```js
 // 第一个参数表示分享相关的信息
@@ -130,14 +152,15 @@ callbackFun: function(){
 }
 ```
 
-##### 5.setNativeData 更新native数据
-说明：更新native数据,比如：修改本地的cookie、session信息，与notice的区别就是native更前端轻量级，notice更业务化
+### 5.setNativeData 更新native数据
+
+> 说明：更新native数据,比如：修改本地的cookie、session信息，与notice的区别就是native更前端轻量级，notice更业务化
 
 参数格式如下：
 ```js
 // 第一个参数表示更新native数据的信息
 param: {
-    actions: 更新native数据的动作名称
+    actions: 更新native数据的动作名称,
 	data: 更新的数据
 }
 // 第二个参数表示APP调用协议成功后的回调函数（可不传）
@@ -146,15 +169,16 @@ callbackFun: function(){
 }
 ```
 
-##### 6.getNativeData 获取native数据
-说明：获取native数据,比如：获取到本地的cookie、session信息、当前登录的用户信息
+### 6.getNativeData 获取native数据
+
+> 说明：获取native数据,比如：获取到本地的cookie、session信息、当前登录的用户信息
 
 参数格式如下：
 ```js
 // 第一个参数表示获取native数据的信息
 param: {
-    actions: 获取native数据的动作名称
-	data: 根据相关的参数获取native数据（可不传）
+    actions: 获取native数据的动作名称,
+    data: 根据相关的参数获取native数据（可不传）
 }
 // 第二个参数表示回调函数（app会通过此函数返回数据）
 callbackFun: function(data){
@@ -162,8 +186,9 @@ callbackFun: function(data){
 }
 ```
 
-##### 7.updateNavbarStatus 修改导航状态
-说明：修改导航状态,是否显示顶部header、是否显示底部tabbar
+### 7.updateNavbarStatus 修改导航状态
+
+> 说明：修改导航状态,是否显示顶部header、是否显示底部tabbar
 
 参数格式如下：
 ```js
@@ -178,8 +203,9 @@ callbackFun: function(){
 }
 ```
 
-##### 8.downloadImage 图片下载（保存）
-说明：在APP的H5的页面中去下载图片
+### 8.downloadImage 图片下载（保存）
+
+> 说明：在APP的H5的页面中去下载图片
 
 参数格式如下：
 ```js
@@ -193,8 +219,9 @@ callbackFun: function(){
 }
 ```
 
-##### 9.customer 自定义扩展协议
-说明：自定义扩展协议，可以根据实际的业务需要扩展出自定义的协议
+### 9.customer 自定义扩展协议
+
+> 说明：自定义扩展协议，可以根据实际的业务需要扩展出自定义的协议
 
 参数格式如下：
 ```js
@@ -212,8 +239,9 @@ callbackFun: function(){
 }
 ```
 
-##### 10.clearWebviewFun 清除webview下的所有回调函数（非协议）
-说明：清除webview下的所有回调函数（非协议）
+### 10.clearWebviewFun 清除webview下的所有回调函数（非协议）
+
+> 说明：清除webview下的所有回调函数（非协议）
 
 无需传参数
 
