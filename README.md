@@ -137,8 +137,9 @@ callbackFun: function(){
 ```js
 // 第一个参数表示分享相关的信息
 param: {
-    type: "wxH5", // wxH5:微信分享H5页面, wxMinProgram：微信小程序, wxPoster: 微信海报（图片）
+    type: "wxH5", //分享的程序类型，wxH5:微信分享H5页面, wxMinProgram：微信小程序, wxPoster: 微信海报（图片）
 	title: "", // 标题
+	shareType: "", // 分享的类型，wxAppMessage（微信好友）、wxTimeline（微信朋友圈）
 	desc: "", // 描述
 	img: "", // 图片
 	url: "", // 地址
